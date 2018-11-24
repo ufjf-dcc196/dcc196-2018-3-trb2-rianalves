@@ -1,6 +1,7 @@
 package dcc196.ufjf.br.semanac.Adapter;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,13 +11,20 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import dcc196.ufjf.br.semanac.DAO.SemanaContract;
 import dcc196.ufjf.br.semanac.Modelo.Participante;
 import dcc196.ufjf.br.semanac.R;
 
 public class ParticipanteAdapter extends RecyclerView.Adapter<ParticipanteAdapter.ViewHolder> {
 
-    private List<Participante> lstParticipante;
+    private Cursor cursor;
+    public ParticipanteAdapter(Cursor c){cursor = c;}
     private OnItemClickListener listener;
+
+    public void setCursor(Cursor c){
+        cursor = c;
+        notifyDataSetChanged();
+    }
 
     public interface OnItemClickListener{
         void onItemClick(View view, int position);
@@ -27,31 +35,31 @@ public class ParticipanteAdapter extends RecyclerView.Adapter<ParticipanteAdapte
         this.listener = listener;
     }
 
-    public ParticipanteAdapter (List<Participante> participantes)
-    {
-        this.lstParticipante = participantes;
-    }
-
 
     @NonNull
     @Override
     public ParticipanteAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+
         Context context = viewGroup.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
+
         View participanteView = inflater.inflate(R.layout.layout_participante, viewGroup, false);
-        ViewHolder viewHolder = new ViewHolder(participanteView);
-        return viewHolder;
+        ViewHolder holder = new ViewHolder(participanteView);
+        return holder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        viewHolder.itemParticipante.setText(lstParticipante.get(i).getNome());
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        int idxNome = cursor.getColumnIndexOrThrow(SemanaContract.Participante.COLUMN_NAME_PARTICIPANTE);
+        cursor.moveToPosition(position);
+        holder.itemParticipante.setText(idxNome);
     }
 
        @Override
     public int getItemCount() {
-        return lstParticipante.size();
+        return cursor.getCount();
     }
+
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
         public TextView itemParticipante;
