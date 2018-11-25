@@ -52,7 +52,7 @@ public class ParticipanteAdapter extends RecyclerView.Adapter<ParticipanteAdapte
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         int idxNome = cursor.getColumnIndexOrThrow(SemanaContract.Participante.COLUMN_NAME_PARTICIPANTE);
         cursor.moveToPosition(position);
-        holder.itemParticipante.setText(idxNome);
+        holder.itemParticipante.setText(cursor.getString(idxNome));
     }
 
        @Override

@@ -45,7 +45,7 @@ public class EventoDetlhesActivity extends AppCompatActivity {
         preencheInfos(recuperado);
 
         rv_ListaParticipantesEvento.setLayoutManager(new LinearLayoutManager(this));
-        rv_ListaParticipantesEvento.setAdapter(new ParticipanteAdapter(recuperado.getParticipanteList()));
+       // rv_ListaParticipantesEvento.setAdapter(new ParticipanteAdapter(recuperado.getParticipanteList()));
 
     }
 

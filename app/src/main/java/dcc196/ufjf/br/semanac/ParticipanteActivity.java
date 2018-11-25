@@ -2,6 +2,8 @@ package dcc196.ufjf.br.semanac;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,6 +15,8 @@ import android.widget.TextView;
 
 import dcc196.ufjf.br.semanac.Adapter.ParticipanteAdapter;
 import dcc196.ufjf.br.semanac.DAO.DAO;
+import dcc196.ufjf.br.semanac.DAO.SemanaContract;
+import dcc196.ufjf.br.semanac.DAO.SemanaDBHelper;
 import dcc196.ufjf.br.semanac.Modelo.Participante;
 
 public class ParticipanteActivity extends AppCompatActivity {
@@ -23,32 +27,32 @@ public class ParticipanteActivity extends AppCompatActivity {
     private RecyclerView rclListaParticipante;
     private TextView txtTotalP;
 
+    private SemanaDBHelper dbHelper;
     private ParticipanteAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_participante);
+        dbHelper = new SemanaDBHelper(getApplicationContext());
 
         btnInserirParticipante = (Button) findViewById(R.id.btn_inserirParticipante);
         txtTotalP =(TextView) findViewById(R.id.txt_totalP);
 
         rclListaParticipante = (RecyclerView) findViewById(R.id.rcl_Participantes);
         rclListaParticipante.setLayoutManager(new LinearLayoutManager(this));
-        rclListaParticipante.setAdapter(new ParticipanteAdapter(DAO.getParticipanteInstance()));
 
-        adapter = new ParticipanteAdapter(DAO.getParticipanteInstance());
+        adapter = new ParticipanteAdapter(getCursorParticipantes());
         adapter.setOnClickListener(new ParticipanteAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                Intent intent = new Intent(ParticipanteActivity.this, ParticipanteDetalhesActivity.class);
-                Participante participante = (Participante) DAO.getParticipanteInstance().get(position);
-                intent.putExtra("participante", participante);
+                Intent intent = new Intent(ParticipanteActivity.this,ParticipanteDetalhesActivity.class);
+                intent.putExtra("participanteescolhido",position);
                 startActivity(intent);
             }
-        });
-
-        rclListaParticipante.setAdapter(adapter);
+        }
+    );
+       rclListaParticipante.setAdapter(adapter);
 
         int total = DAO.getParticipanteInstance().size();
         txtTotalP.setText("Total de Participantes: " + total);
@@ -69,5 +73,15 @@ public class ParticipanteActivity extends AppCompatActivity {
             txtTotalP.setText("Total de Participantes: " + total);
         }
         adapter.notifyDataSetChanged();
+    }
+
+    private Cursor getCursorParticipantes() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String[] visao = {
+                SemanaContract.Participante.COLUMN_NAME_PARTICIPANTE
+        };
+
+        String sort = SemanaContract.Participante.COLUMN_NAME_PARTICIPANTE + " DESC";
+        return db.query(SemanaContract.Participante.TABLE_NAME, visao,null,null,null,null, sort);
     }
 }
