@@ -66,7 +66,7 @@ public class InserirEventoActivity extends AppCompatActivity {
                 Log.i("DBINFO", "registro criado com id: "+id);
                 setResult(Activity.RESULT_OK);
                 finish();
-                
+
             }
         });
     }
