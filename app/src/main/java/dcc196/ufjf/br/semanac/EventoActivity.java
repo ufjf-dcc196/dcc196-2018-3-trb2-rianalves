@@ -56,7 +56,7 @@ public class EventoActivity extends AppCompatActivity {
         btnCadastrarEvento.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(EventoActivity.this, CadastroEventoActivity.class);
+                Intent intent = new Intent(EventoActivity.this, InserirEventoActivity.class);
                 startActivityForResult(intent, EventoActivity.REQUEST_CADEVENTO);
             }
         });

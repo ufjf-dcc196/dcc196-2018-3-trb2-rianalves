@@ -1,8 +1,11 @@
 package dcc196.ufjf.br.semanac;
 
 import android.app.Activity;
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,9 +15,11 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import dcc196.ufjf.br.semanac.DAO.DAO;
+import dcc196.ufjf.br.semanac.DAO.SemanaContract;
+import dcc196.ufjf.br.semanac.DAO.SemanaDBHelper;
 import dcc196.ufjf.br.semanac.Modelo.Evento;
 
-public class CadastroEventoActivity extends AppCompatActivity {
+public class InserirEventoActivity extends AppCompatActivity {
     private Button btnConfirmaCadEvento;
     private EditText txtTitulo;
     private EditText txtLocal;
@@ -22,6 +27,7 @@ public class CadastroEventoActivity extends AppCompatActivity {
     private EditText txtNumMaximoInscritos;
     private EditText txtFacilitador;
     private EditText txtDescicao;
+    private SemanaDBHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +45,7 @@ public class CadastroEventoActivity extends AppCompatActivity {
         btnConfirmaCadEvento.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 String data = txtData.getText().toString();
                 SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm");
                 Calendar cal = Calendar.getInstance();
@@ -47,10 +54,19 @@ public class CadastroEventoActivity extends AppCompatActivity {
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                Evento evento = new Evento(txtTitulo.getText().toString(), txtLocal.getText().toString(), cal, txtFacilitador.getText().toString(), txtDescicao.getText().toString(), null, Integer.parseInt(txtNumMaximoInscritos.getText().toString()), 0);
-                DAO.getEventoInstance().add(evento);
+                SQLiteDatabase db = dbHelper.getWritableDatabase();
+                ContentValues valores = new ContentValues();
+                valores.put(SemanaContract.Evento.COLUMN_NAME_TITULO,txtTitulo.getText().toString());
+                valores.put(SemanaContract.Evento.COLUMN_NAME_DESCRICAO,txtDescicao.getText().toString());
+                valores.put(SemanaContract.Evento.COLUMN_NAME_DATA, String.valueOf(cal));
+                valores.put(SemanaContract.Evento.COLUMN_NAME_FACILITADOR,txtFacilitador.getText().toString());
+                valores.put(SemanaContract.Evento.COLUMN_NAME_LOCAL,txtLocal.getText().toString());
+                valores.put(SemanaContract.Evento.COLUMN_NAME_LOTACAO,txtNumMaximoInscritos.getText().toString());
+                long id = db.insert(SemanaContract.Evento.TABLE_NAME,null, valores);
+                Log.i("DBINFO", "registro criado com id: "+id);
                 setResult(Activity.RESULT_OK);
                 finish();
+                
             }
         });
     }
