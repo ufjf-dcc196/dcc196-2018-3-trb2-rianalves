@@ -35,11 +35,13 @@ public class ParticipanteDetalhesActivity extends AppCompatActivity {
     private TextView txtCPF;
     private TextView txtEventoCadastrados;
     private TextView txtEventosNaoCadastrados;
+    private Integer participanteEscolhido;
     private ParticipanteDetalhesAdapter adapter;
     private ParticipanteDetalhesAdapter adapter2;
     private List<Evento> eventosInscritos;
     private List<Evento> eventosTodos;
     private List<Evento> eventosDisponiveis;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,8 +56,13 @@ public class ParticipanteDetalhesActivity extends AppCompatActivity {
         rclEventosInscritos = (RecyclerView) findViewById(R.id.rcl_EventosInscritos);
         rvListaEventosNaoInscrito = (RecyclerView) findViewById(R.id.rcl_Eventos);
 
+        final Bundle extra = getIntent().getExtras();
+
+        participanteEscolhido = extra.getInt("participanteescolhido");
+        participante = DAO.retornarDadosParticipante(participanteEscolhido);
+
         Intent intent = getIntent();
-        participante = (Participante) intent.getSerializableExtra("participante");
+        participante = (Participante) intent.getSerializableExtra("participanteescolhido");
 
         txtNome.setText("Nome: " +participante.getNome());
         txtEmail.setText("Email: " + participante.getEmail());
@@ -209,20 +216,7 @@ public class ParticipanteDetalhesActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == ParticipanteDetalhesActivity.REQUEST_EDIT && resultCode == Activity.RESULT_OK){
-            Participante p = (Participante) data.getSerializableExtra("participante");
-            List<Participante> participanteList = DAO.getParticipanteInstance();
-            for (Participante parts: participanteList) {
-                if (parts.getNome().equals(participante.getNome()) && parts.getCpf().equals(participante.getCpf()) && parts.getEmail().equals(participante.getEmail()))
-                {
-                    parts.setNome(p.getNome());
-                    parts.setCpf(p.getCpf());
-                    parts.setEmail(p.getEmail());
-                    txtNome.setText("Nome: " +p.getNome());
-                    txtEmail.setText("Email: " + p.getEmail());
-                    txtCPF.setText("CPF: " + p.getCpf());
-                    break;
-                }
-            }
+            DAO.retornarDadosParticipante(participanteEscolhido);
         }
     }
 }

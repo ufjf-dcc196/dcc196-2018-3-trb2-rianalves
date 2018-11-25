@@ -69,7 +69,7 @@ public class ParticipanteActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == ParticipanteActivity.REQUEST_INSEREPARTICIPANTE && resultCode == Activity.RESULT_OK){
-            int total = DAO.getParticipanteInstance().size();
+            int total = getCursorParticipantes().getCount();
             txtTotalP.setText("Total de Participantes: " + total);
         }
         adapter.notifyDataSetChanged();

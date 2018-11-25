@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+
 import dcc196.ufjf.br.semanac.Modelo.Evento;
 import dcc196.ufjf.br.semanac.Modelo.Participante;
 
@@ -13,6 +16,8 @@ public class DAO {
 
     public static List<Participante> lstParticipantes;
     private static List<Evento> lstEventos;
+    private static SemanaDBHelper ParticipanteDBHelper;
+    private static Cursor cursor;
 
     public static List getParticipanteInstance()
     {
@@ -49,5 +54,30 @@ public class DAO {
             lstEventos.add(e2);
         }
         return lstEventos;
+    }
+
+    public static Participante retornarDadosParticipante(Integer participanteEscolhido)
+    {
+        SQLiteDatabase db = ParticipanteDBHelper.getReadableDatabase() ;
+
+        String []visao = {
+                SemanaContract.Participante.COLUMN_NAME_PARTICIPANTE,
+                SemanaContract.Participante.COLUMN_NAME_CPF,
+                SemanaContract.Participante.COLUMN_NAME_EMAIL,
+        };
+
+        String select = SemanaContract.Participante._ID+" = ?";
+        String [] selectArgs = {String.valueOf(participanteEscolhido)};
+
+        cursor = db.query(SemanaContract.Participante.TABLE_NAME, visao,select,selectArgs,null,null, null);
+
+        int idxNome = cursor.getColumnIndexOrThrow(SemanaContract.Participante.COLUMN_NAME_PARTICIPANTE);
+        int idxCPF = cursor.getColumnIndexOrThrow(SemanaContract.Participante.COLUMN_NAME_CPF);
+        int idxEmail = cursor.getColumnIndexOrThrow(SemanaContract.Participante.COLUMN_NAME_EMAIL);
+
+        cursor.moveToPosition(0);
+
+        Participante participante = new Participante(cursor.getString(idxNome), cursor.getString(idxEmail) ,cursor.getString(idxCPF), null);
+        return participante;
     }
 }
