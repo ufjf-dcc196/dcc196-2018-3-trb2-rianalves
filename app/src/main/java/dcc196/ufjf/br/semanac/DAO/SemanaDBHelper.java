@@ -15,14 +15,14 @@ public class SemanaDBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SemanaContract.Participante.CREATE_PARTICIPANTE);
-        //db.execSQL(SemanaContract.Evento.CREATE_EVENTO);
+        db.execSQL(SemanaContract.Evento.CREATE_EVENTO);
         //db.execSQL(SemanaContract.EventoParticipante.CREATE_EVENTOPARTICIPANTE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL(SemanaContract.Participante.DROP_PARTICIPANTE);
-      //  db.execSQL(SemanaContract.Evento.DROP_EVENTO);
+        db.execSQL(SemanaContract.Evento.DROP_EVENTO);
         //db.execSQL(SemanaContract.EventoParticipante.DROP_EVENTOPARTICIPANTE);
         onCreate(db);
     }

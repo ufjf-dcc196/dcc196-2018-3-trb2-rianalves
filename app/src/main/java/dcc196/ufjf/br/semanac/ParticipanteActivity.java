@@ -54,7 +54,7 @@ public class ParticipanteActivity extends AppCompatActivity {
     );
        rclListaParticipante.setAdapter(adapter);
 
-        int total = DAO.getParticipanteInstance().size();
+        int total = getCursorParticipantes().getCount();
         txtTotalP.setText("Total de Participantes: " + total);
 
         btnInserirParticipante.setOnClickListener(new View.OnClickListener() {

@@ -34,6 +34,8 @@ public class InserirEventoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cadastro_evento);
 
+        dbHelper = new SemanaDBHelper(getApplicationContext());
+
         btnConfirmaCadEvento = findViewById(R.id.btn_confirmaCadEvento);
         txtTitulo = findViewById(R.id.txt_titulo);
         txtLocal = findViewById(R.id.txt_local);
@@ -66,6 +68,7 @@ public class InserirEventoActivity extends AppCompatActivity {
                 Log.i("DBINFO", "registro criado com id: "+id);
                 setResult(Activity.RESULT_OK);
                 finish();
+
 
             }
         });

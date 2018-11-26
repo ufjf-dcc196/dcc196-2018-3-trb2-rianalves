@@ -2,6 +2,8 @@ package dcc196.ufjf.br.semanac;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,29 +15,34 @@ import android.widget.TextView;
 
 import dcc196.ufjf.br.semanac.Adapter.EventoAdapter;
 import dcc196.ufjf.br.semanac.DAO.DAO;
+import dcc196.ufjf.br.semanac.DAO.SemanaContract;
+import dcc196.ufjf.br.semanac.DAO.SemanaDBHelper;
 import dcc196.ufjf.br.semanac.Modelo.Evento;
 
 public class EventoActivity extends AppCompatActivity {
     private static final int REQUEST_CADEVENTO = 1;
 
     private Button btnCadastrarEvento;
-    private RecyclerView rvListaEventos;
+    private RecyclerView rclListaEventos;
     private TextView txtTotalEventos;
+    private SemanaDBHelper dbHelper;
     private EventoAdapter adapter;
 
-    private int totalEventos = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_evento);btnCadastrarEvento = findViewById(R.id.btn_cadastrarEvento);
-        rvListaEventos = findViewById(R.id.rv_listaEventos);
+        setContentView(R.layout.activity_evento);
+
+        dbHelper = new SemanaDBHelper(getApplicationContext());
+
+        btnCadastrarEvento = findViewById(R.id.btn_cadastrarEvento);
+        rclListaEventos = findViewById(R.id.rv_listaEventos);
         txtTotalEventos = findViewById(R.id.txt_totalEventos);
 
-        rvListaEventos = (RecyclerView) findViewById(R.id.rv_listaEventos);
-        rvListaEventos.setLayoutManager(new LinearLayoutManager(this));
-        rvListaEventos.setAdapter(new EventoAdapter(DAO.getEventoInstance()));
+        rclListaEventos = (RecyclerView) findViewById(R.id.rv_listaEventos);
+        rclListaEventos.setLayoutManager(new LinearLayoutManager(this));
 
-        adapter = new EventoAdapter(DAO.getEventoInstance());
+        adapter = new EventoAdapter(getCursorEventos());
         adapter.setOnClickListener(new EventoAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
@@ -45,10 +52,10 @@ public class EventoActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        rvListaEventos.setAdapter(adapter);
+        rclListaEventos.setAdapter(adapter);
 
 
-        int total = DAO.getEventoInstance().size();
+        int total = getCursorEventos().getCount();
 
         txtTotalEventos.setText("Total de Eventos: " + total);
 
@@ -66,9 +73,20 @@ public class EventoActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == EventoActivity.REQUEST_CADEVENTO && resultCode == Activity.RESULT_OK){
-            int total = DAO.getEventoInstance().size();
+            int total = getCursorEventos().getCount();
             txtTotalEventos.setText("Total de Eventos: " + total);
         }
-        adapter.notifyDataSetChanged();
+
+    }
+
+    private Cursor getCursorEventos() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        String[] visao = {
+                SemanaContract.Evento.COLUMN_NAME_TITULO
+        };
+
+        String sort = SemanaContract.Evento.COLUMN_NAME_TITULO + " DESC";
+        return db.query(SemanaContract.Evento.TABLE_NAME, visao,null,null,null,null, sort);
     }
 }
