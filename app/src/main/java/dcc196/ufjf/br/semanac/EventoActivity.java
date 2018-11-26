@@ -47,8 +47,7 @@ public class EventoActivity extends AppCompatActivity {
             @Override
             public void onItemClick(View view, int position) {
                 Intent intent = new Intent(EventoActivity.this, EventoDetlhesActivity.class);
-                Evento e = (Evento) DAO.getEventoInstance().get(position);
-                intent.putExtra("evento", e);
+                intent.putExtra("evento", position);
                 startActivity(intent);
             }
         });

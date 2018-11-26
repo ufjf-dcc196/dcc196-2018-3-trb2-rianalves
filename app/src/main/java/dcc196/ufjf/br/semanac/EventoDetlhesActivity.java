@@ -1,22 +1,22 @@
 package dcc196.ufjf.br.semanac;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.TextView;
+import android.database.sqlite.SQLiteDatabase;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
-import dcc196.ufjf.br.semanac.Adapter.ParticipanteAdapter;
+import dcc196.ufjf.br.semanac.DAO.SemanaContract;
+import dcc196.ufjf.br.semanac.DAO.SemanaDBHelper;
 import dcc196.ufjf.br.semanac.Modelo.Evento;
 
 public class EventoDetlhesActivity extends AppCompatActivity {
 
     private Evento recuperado;
-    private RecyclerView rv_ListaParticipantesEvento;
+    private RecyclerView rclListaParticipantesEvento;
     private TextView nomeEvento;
     private TextView localEvento;
     private TextView dataEvento;
@@ -24,6 +24,8 @@ public class EventoDetlhesActivity extends AppCompatActivity {
     private TextView vagasEvento;
     private TextView inscritosEvento;
     private TextView descricaoEvento;
+    private Cursor cursor;
+    private SemanaDBHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,29 +39,53 @@ public class EventoDetlhesActivity extends AppCompatActivity {
         vagasEvento = findViewById(R.id.txtVagasEventoInformacao);
         inscritosEvento = findViewById(R.id.txtInscritosEventoInformacao);
         descricaoEvento = findViewById(R.id.txtDescricaoEventoInformacao);
-        rv_ListaParticipantesEvento = findViewById(R.id.rv_ListaDeInscritosEventoInformacao);
+        rclListaParticipantesEvento = findViewById(R.id.rv_ListaDeInscritosEventoInformacao);
+
+        dbHelper = new SemanaDBHelper(getApplicationContext());
+
+        Bundle extra = getIntent().getExtras();
+        Integer recuperado = extra.getInt("evento");
+        retornarDadosEvento(recuperado);
 
 
-        Intent intent = getIntent();
-        recuperado = (Evento) intent.getSerializableExtra("evento");
-        preencheInfos(recuperado);
-
-        rv_ListaParticipantesEvento.setLayoutManager(new LinearLayoutManager(this));
-       // rv_ListaParticipantesEvento.setAdapter(new ParticipanteAdapter(recuperado.getParticipanteList()));
+         rclListaParticipantesEvento.setLayoutManager(new LinearLayoutManager(this));
 
     }
 
-    public void preencheInfos(Evento evento)
+    public void retornarDadosEvento(Integer recuperado)
     {
-        nomeEvento.setText("Nome: " + evento.getNome());
-        localEvento.setText("Local: " + evento.getLocal());
-        Calendar c = evento.getDataEvento();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm");
-        String data = sdf.format(c.getTime());
-        dataEvento.setText("Data: " + data);
-        facilitadorEvento.setText("Facilitador: " + evento.getFacilitador());
-        vagasEvento.setText("Vagas: " + String.valueOf(evento.getNumMaximoInscritos()));
-        inscritosEvento.setText("Inscritos: " + String.valueOf(evento.getNumInscritos()));
-        descricaoEvento.setText("Descrição: " + evento.getDescricao());
+
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String []visao = {
+                SemanaContract.Evento.COLUMN_NAME_TITULO,
+                SemanaContract.Evento.COLUMN_NAME_LOCAL,
+                SemanaContract.Evento.COLUMN_NAME_DATA,
+                SemanaContract.Evento.COLUMN_NAME_FACILITADOR,
+                SemanaContract.Evento.COLUMN_NAME_DESCRICAO,
+                SemanaContract.Evento.COLUMN_NAME_LOTACAO,
+
+        };
+
+        String select = SemanaContract.Evento._ID+" = ?";
+        String [] selectArgs = {String.valueOf(recuperado)};
+
+        cursor = db.query(SemanaContract.Evento.TABLE_NAME, visao,select,selectArgs,null,null, null);
+
+
+        int idxNome = cursor.getColumnIndexOrThrow(SemanaContract.Evento.COLUMN_NAME_TITULO);
+        int idxLocal = cursor.getColumnIndexOrThrow(SemanaContract.Evento.COLUMN_NAME_LOCAL);
+        int idxData = cursor.getColumnIndexOrThrow(SemanaContract.Evento.COLUMN_NAME_DATA);
+        int idxFacilitador = cursor.getColumnIndexOrThrow(SemanaContract.Evento.COLUMN_NAME_FACILITADOR);
+        int idxDescricao = cursor.getColumnIndexOrThrow(SemanaContract.Evento.COLUMN_NAME_DESCRICAO);
+        int idxLotacao = cursor.getColumnIndex(SemanaContract.Evento.COLUMN_NAME_LOTACAO);
+
+        cursor.moveToPosition(0);
+
+        nomeEvento.setText(cursor.getString(idxNome));
+        localEvento.setText( cursor.getString(idxLocal));
+        //dataEvento.setText(cursor.getString(idxData));
+        vagasEvento.setText("Vagas: "+ cursor.getString(idxLotacao));
+        facilitadorEvento.setText("Facilitador: "+cursor.getString(idxFacilitador));
+        descricaoEvento.setText("Descrição" + cursor.getString(idxDescricao));
     }
 }
