@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class SemanaDBHelper extends SQLiteOpenHelper {
-    public final static int DATABASE_VERSION = 1;
+    public final static int DATABASE_VERSION = 5;
     public final static String DATABASE_NAME = "Semana.db";
 
     public SemanaDBHelper(Context context) {

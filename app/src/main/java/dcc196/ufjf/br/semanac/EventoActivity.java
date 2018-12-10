@@ -13,13 +13,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.io.Serializable;
+
 import dcc196.ufjf.br.semanac.Adapter.EventoAdapter;
-import dcc196.ufjf.br.semanac.DAO.DAO;
 import dcc196.ufjf.br.semanac.DAO.SemanaContract;
 import dcc196.ufjf.br.semanac.DAO.SemanaDBHelper;
-import dcc196.ufjf.br.semanac.Modelo.Evento;
 
-public class EventoActivity extends AppCompatActivity {
+public class EventoActivity extends AppCompatActivity  {
     private static final int REQUEST_CADEVENTO = 1;
 
     private Button btnCadastrarEvento;
@@ -34,13 +34,14 @@ public class EventoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_evento);
 
         dbHelper = new SemanaDBHelper(getApplicationContext());
-
+       // ApagarTabela();
         btnCadastrarEvento = findViewById(R.id.btn_cadastrarEvento);
         rclListaEventos = findViewById(R.id.rv_listaEventos);
         txtTotalEventos = findViewById(R.id.txt_totalEventos);
 
         rclListaEventos = (RecyclerView) findViewById(R.id.rv_listaEventos);
         rclListaEventos.setLayoutManager(new LinearLayoutManager(this));
+
 
         adapter = new EventoAdapter(getCursorEventos());
         adapter.setOnClickListener(new EventoAdapter.OnItemClickListener() {
@@ -54,9 +55,7 @@ public class EventoActivity extends AppCompatActivity {
         rclListaEventos.setAdapter(adapter);
 
 
-        int total = getCursorEventos().getCount();
-
-        txtTotalEventos.setText("Total de Eventos: " + total);
+        txtTotalEventos.setText("Total de Eventos: " + getCursorEventos().getCount());
 
 
         btnCadastrarEvento.setOnClickListener(new View.OnClickListener() {
@@ -75,17 +74,25 @@ public class EventoActivity extends AppCompatActivity {
             int total = getCursorEventos().getCount();
             txtTotalEventos.setText("Total de Eventos: " + total);
         }
-
+        adapter.setCursor(getCursorEventos());
     }
 
     private Cursor getCursorEventos() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-        String[] visao = {
+        String[] visualiza = {
+                SemanaContract.Evento.COLUMN_NAME_ID,
                 SemanaContract.Evento.COLUMN_NAME_TITULO
         };
 
-        String sort = SemanaContract.Evento.COLUMN_NAME_TITULO + " DESC";
-        return db.query(SemanaContract.Evento.TABLE_NAME, visao,null,null,null,null, sort);
+        String sort = SemanaContract.Evento.COLUMN_NAME_TITULO + " ASC ";
+        return db.query(SemanaContract.Evento.TABLE_NAME, visualiza,null,null,null,null, sort);
+    }
+
+    private void ApagarTabela()
+    {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        //db.execSQL(SemanaContract.Participante.DROP_PARTICIPANTE);
+        db.execSQL(SemanaContract.Evento.DROP_EVENTO);
     }
 }

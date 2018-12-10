@@ -56,17 +56,18 @@ public class DAO {
         return lstEventos;
     }
 
-    public static Participante retornarDadosParticipante(Integer participanteEscolhido)
+    public static Participante retornarDadosParticipante(String participanteEscolhido)
     {
         SQLiteDatabase db = ParticipanteDBHelper.getReadableDatabase() ;
 
         String []visao = {
+                SemanaContract.Participante.COLUMN_NAME_ID,
                 SemanaContract.Participante.COLUMN_NAME_PARTICIPANTE,
                 SemanaContract.Participante.COLUMN_NAME_CPF,
                 SemanaContract.Participante.COLUMN_NAME_EMAIL,
         };
 
-        String select = SemanaContract.Participante._ID+" = ?";
+        String select = SemanaContract.Participante.COLUMN_NAME_ID +" = ?";
         String [] selectArgs = {String.valueOf(participanteEscolhido)};
 
         cursor = db.query(SemanaContract.Participante.TABLE_NAME, visao,select,selectArgs,null,null, null);
@@ -80,4 +81,6 @@ public class DAO {
         Participante participante = new Participante(cursor.getString(idxNome), cursor.getString(idxEmail) ,cursor.getString(idxCPF), null);
         return participante;
     }
+
+
 }

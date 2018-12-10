@@ -14,10 +14,9 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import dcc196.ufjf.br.semanac.Adapter.ParticipanteAdapter;
-import dcc196.ufjf.br.semanac.DAO.DAO;
 import dcc196.ufjf.br.semanac.DAO.SemanaContract;
 import dcc196.ufjf.br.semanac.DAO.SemanaDBHelper;
-import dcc196.ufjf.br.semanac.Modelo.Participante;
+
 
 public class ParticipanteActivity extends AppCompatActivity {
 
@@ -34,8 +33,9 @@ public class ParticipanteActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_participante);
-        dbHelper = new SemanaDBHelper(getApplicationContext());
 
+        dbHelper = new SemanaDBHelper(getApplicationContext());
+       //ApagarTabela();
         btnInserirParticipante = (Button) findViewById(R.id.btn_inserirParticipante);
         txtTotalP =(TextView) findViewById(R.id.txt_totalP);
 
@@ -78,10 +78,18 @@ public class ParticipanteActivity extends AppCompatActivity {
     private Cursor getCursorParticipantes() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         String[] visao = {
+                SemanaContract.Participante.COLUMN_NAME_ID,
                 SemanaContract.Participante.COLUMN_NAME_PARTICIPANTE
         };
 
         String sort = SemanaContract.Participante.COLUMN_NAME_PARTICIPANTE + " DESC";
         return db.query(SemanaContract.Participante.TABLE_NAME, visao,null,null,null,null, sort);
+    }
+
+    private void ApagarTabela()
+    {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.execSQL(SemanaContract.Participante.DROP_PARTICIPANTE);
+        db.execSQL(SemanaContract.Evento.DROP_EVENTO);
     }
 }

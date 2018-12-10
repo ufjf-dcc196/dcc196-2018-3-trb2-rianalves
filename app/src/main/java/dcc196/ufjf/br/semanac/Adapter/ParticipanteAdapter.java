@@ -50,9 +50,11 @@ public class ParticipanteAdapter extends RecyclerView.Adapter<ParticipanteAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        int idxID = cursor.getColumnIndexOrThrow(SemanaContract.Participante.COLUMN_NAME_ID);
         int idxNome = cursor.getColumnIndexOrThrow(SemanaContract.Participante.COLUMN_NAME_PARTICIPANTE);
         cursor.moveToPosition(position);
-        holder.itemParticipante.setText(cursor.getString(idxNome));
+        holder.txt_idParticipante.setText(String.valueOf(cursor.getInt(idxID)));
+        holder.txt_nomeParticipante.setText(cursor.getString(idxNome));
     }
 
        @Override
@@ -62,12 +64,14 @@ public class ParticipanteAdapter extends RecyclerView.Adapter<ParticipanteAdapte
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
-        public TextView itemParticipante;
+        public TextView txt_idParticipante;
+        public TextView txt_nomeParticipante;
 
         public ViewHolder (final View participanteView)
         {
             super(participanteView);
-            itemParticipante = (TextView)participanteView.findViewById(R.id.txt_Nome_View);
+            txt_idParticipante = (TextView)participanteView.findViewById(R.id.txt_id);
+            txt_nomeParticipante = (TextView)participanteView.findViewById(R.id.txt_Nome_View);
             participanteView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -76,7 +80,7 @@ public class ParticipanteAdapter extends RecyclerView.Adapter<ParticipanteAdapte
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION)
                         {
-                            listener.onItemClick(participanteView, position);
+                            listener.onItemClick(participanteView,Integer.parseInt(txt_idParticipante.getText().toString()));
                         }
                     }
                 }

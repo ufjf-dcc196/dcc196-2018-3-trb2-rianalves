@@ -1,6 +1,8 @@
 package dcc196.ufjf.br.semanac.Adapter;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,7 +12,10 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import dcc196.ufjf.br.semanac.DAO.SemanaContract;
+import dcc196.ufjf.br.semanac.DAO.SemanaDBHelper;
 import dcc196.ufjf.br.semanac.Modelo.Evento;
+import dcc196.ufjf.br.semanac.Modelo.Participante;
 import dcc196.ufjf.br.semanac.R;
 
 public class ParticipanteDetalhesAdapter extends RecyclerView.Adapter<ParticipanteDetalhesAdapter.ViewHolder> {
@@ -116,4 +121,6 @@ public class ParticipanteDetalhesAdapter extends RecyclerView.Adapter<Participan
             return false;
         }
     }
+
+
 }

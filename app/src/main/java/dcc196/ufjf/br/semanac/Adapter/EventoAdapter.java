@@ -17,10 +17,16 @@ import dcc196.ufjf.br.semanac.R;
 
 public class EventoAdapter extends RecyclerView.Adapter<EventoAdapter.ViewHolder>{
 
-    private List<Evento> eventoList;
+
+
     private OnItemClickListener listener;
     private Cursor cursor;
-    public EventoAdapter(Cursor c){cursor = c;}
+    private OnEventoLongClickListener longListener;
+    public Evento[] getItem;
+
+    public EventoAdapter(Cursor cursorEventos) {
+        cursor = cursorEventos;
+    }
 
 
     public void setCursor(Cursor c){
@@ -29,8 +35,13 @@ public class EventoAdapter extends RecyclerView.Adapter<EventoAdapter.ViewHolder
     }
 
 
+
     public interface OnItemClickListener{
         void onItemClick(View view, int position);
+    }
+
+    public interface OnEventoLongClickListener {
+        void onEventoLongClick(View view, int position);
     }
 
     public void setOnClickListener(OnItemClickListener listener)
@@ -38,10 +49,12 @@ public class EventoAdapter extends RecyclerView.Adapter<EventoAdapter.ViewHolder
         this.listener = listener;
     }
 
-    public EventoAdapter (List<Evento> eventos)
-    {
-        this.eventoList = eventos;
-    }
+    public void setOnEventoLongClickListener(OnEventoLongClickListener listener){this.longListener = listener;}
+
+   // public EventoAdapter (List<Evento> eventos)
+   // {
+     //  this.eventoList = eventos;
+    //}
 
     @NonNull
     @Override
@@ -55,10 +68,11 @@ public class EventoAdapter extends RecyclerView.Adapter<EventoAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull EventoAdapter.ViewHolder holder, int position) {
+        int idxID = cursor.getColumnIndexOrThrow(SemanaContract.Evento.COLUMN_NAME_ID);
         int idxTitulo = cursor.getColumnIndexOrThrow(SemanaContract.Evento.COLUMN_NAME_TITULO);
         cursor.moveToPosition(position);
+        holder.idEvento.setText(String.valueOf(cursor.getInt(idxID)));
         holder.itemEvento.setText(cursor.getString(idxTitulo));
-
     }
 
     @Override
@@ -66,14 +80,16 @@ public class EventoAdapter extends RecyclerView.Adapter<EventoAdapter.ViewHolder
         return cursor.getCount();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
-    {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnLongClickListener {
+        public TextView idEvento;
         public TextView itemEvento;
 
         public ViewHolder (final View eventoView)
         {
             super(eventoView);
+            idEvento = (TextView) eventoView.findViewById(R.id.txt_id_layout);
             itemEvento = (TextView)eventoView.findViewById(R.id.txtEventoNome);
+
             eventoView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -85,6 +101,21 @@ public class EventoAdapter extends RecyclerView.Adapter<EventoAdapter.ViewHolder
                             listener.onItemClick(eventoView, position);
                         }
                     }
+
+                }
+            });
+
+            eventoView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    if(longListener!=null){
+                        int position = getAdapterPosition();
+                        if(position!=RecyclerView.NO_POSITION){
+                            longListener.onEventoLongClick(eventoView, position);
+                            return true;
+                        }
+                    }
+                    return false;
                 }
             });
         }
@@ -97,6 +128,18 @@ public class EventoAdapter extends RecyclerView.Adapter<EventoAdapter.ViewHolder
             {
                 listener.onItemClick(v, position);
             }
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            if(longListener!=null){
+                int position = getAdapterPosition();
+                if(position != RecyclerView.NO_POSITION){
+                    longListener.onEventoLongClick( v,position );
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
